@@ -18,6 +18,7 @@ async function configureBrowser(product) {
 
 async function checkPrice(page, priceTarget, product) {
   try {
+    // page.reload(); //verify if there is a way to prevent this
     let html = await page.evaluate(() => document.body.innerHTML);
     const $ = cheerio.load(html);
     let offerList = [];
@@ -39,8 +40,6 @@ async function checkPrice(page, priceTarget, product) {
             $(row).find("span.a-offscreen").text().substring(1),
           );
           const offerID = JSON.parse(offerAttribute).oid;
-          console.log(offerID);
-          console.log(offerPrice);
           if (offerPrice < priceTarget)
             offerList.push({
               price: offerPrice,
@@ -66,12 +65,12 @@ async function startTracking() {
     const price = parseFloat(products[index].price);
     const page = await configureBrowser(product);
     let offers = await checkPrice(page, price, product);
-    //console.log(offers);
     if (offers.length > 0) {
       for (let row = 0; row < offers.length; row++) {
         if (await OfferExists(products[index].id, offers[row].price)) {
           let newOffer = await insertOffer(products[index].id, offers[row]);
           //send notifications
+          console.log("Send notification: ", offers[row]);
           await insertNotifications(newOffer);
           const webhookClient = new WebhookClient({
             id: "1017555269368160287",
@@ -93,10 +92,10 @@ async function startTracking() {
             })
             .setTimestamp();
 
-          await webhookClient.send({
-            avatarURL: "",
-            embeds: [embed],
-          });
+          // await webhookClient.send({
+          //   avatarURL: "",
+          //   embeds: [embed],
+          // });
         }
       }
     }
