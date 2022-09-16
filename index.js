@@ -1,12 +1,8 @@
 import * as cheerio from "cheerio";
 import * as puppeteer from "puppeteer";
 import { EmbedBuilder, WebhookClient } from "discord.js";
-import {
-  getAllProducts,
-  OfferExists,
-  insertOffer,
-  insertNotifications,
-} from "./queries.js";
+import { getProducts } from "./db/products.js";
+import { offerExists } from "./db/offers.js";
 
 async function configureBrowser(product) {
   const url = `https://smile.amazon.com/dp/${product}?aod=1`;
@@ -58,20 +54,23 @@ async function checkPrice(page, priceTarget, product) {
 }
 
 async function startTracking() {
-  let products = await getAllProducts();
+  //let products = await getProducts();
+  let products = [
+    { asin: "B09G9FWZ28", price: 260.0, description: "apple watch" },
+  ];
   for (let index = 0; index < products.length; index++) {
     const product = products[index].asin;
     console.log("tracking: ", product);
     const price = parseFloat(products[index].price);
     const page = await configureBrowser(product);
     let offers = await checkPrice(page, price, product);
+    console.log(offers);
     if (offers.length > 0) {
       for (let row = 0; row < offers.length; row++) {
-        if (await OfferExists(products[index].id, offers[row].price)) {
-          let newOffer = await insertOffer(products[index].id, offers[row]);
-          //send notifications
-          console.log("Send notification: ", offers[row]);
-          await insertNotifications(newOffer);
+        const offerExist = true; //await OfferExists(products[index].id, offers[row].price)
+        if (offerExist) {
+          // let newOffer = await insertOffer(products[index].id, offers[row]);
+
           const webhookClient = new WebhookClient({
             id: "1017555269368160287",
             token:
@@ -91,7 +90,7 @@ async function startTracking() {
               inline: true,
             })
             .setTimestamp();
-
+          //DISCORD NOTIFICATION
           // await webhookClient.send({
           //   avatarURL: "",
           //   embeds: [embed],

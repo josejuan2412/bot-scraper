@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/josejuan2412/bot-scraper#readme",
   "dependencies": {
-    "axios": "^0.27.2",
+    "aws-sdk": "^2.1215.0",
     "cheerio": "^1.0.0-rc.12",
     "discord.js": "^14.3.0",
-    "jsdom": "^20.0.0",
-    "mysql": "^2.18.1",
-    "puppeteer": "^17.1.3"
+    "dotenv": "^16.0.2",
+    "puppeteer": "^17.1.3",
+    "uuid": "^9.0.0"
   }
 }
