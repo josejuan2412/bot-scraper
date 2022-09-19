@@ -4,7 +4,6 @@ import AWS from "aws-sdk";
 import "dotenv/config";
 let awsConfig = {
   region: process.env.AWS_DEFAULT_REGION,
-  //endpoint: "http://dynamodb.us-east-1.amazonaws.com",
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.WWCf9S9EFlsQqWkKhoV4uSQLNbnhk8Qs56K9s6Ky,
 };
