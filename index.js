@@ -4,6 +4,10 @@ import { EmbedBuilder, WebhookClient } from "discord.js";
 import { getProducts } from "./db/products.js";
 import { offerExists } from "./db/offers.js";
 
+// Db
+// Notification
+// Scraper
+
 async function configureBrowser(product) {
   const url = `https://smile.amazon.com/dp/${product}?aod=1`;
   const browser = await puppeteer.launch();
@@ -28,12 +32,12 @@ async function checkPrice(page, priceTarget, product) {
           .text();
         if (provider.trim() === "Amazon Warehouse") {
           let buttonDiv = $(row).find(
-            "div.a-fixed-right-grid-col.aod-atc-column.a-col-right",
+            "div.a-fixed-right-grid-col.aod-atc-column.a-col-right"
           );
           let offerElement = $(buttonDiv).find("span.a-declarative");
           const offerAttribute = offerElement[0].attribs["data-aod-atc-action"];
           const offerPrice = parseFloat(
-            $(row).find("span.a-offscreen").text().substring(1),
+            $(row).find("span.a-offscreen").text().substring(1)
           );
           const offerID = JSON.parse(offerAttribute).oid;
           if (offerPrice < priceTarget)
@@ -80,7 +84,7 @@ async function startTracking() {
           const embed = new EmbedBuilder()
             .setColor(0x0099ff)
             .setTitle(
-              `[$${offers[row].price}] - ${products[index].description}`,
+              `[$${offers[row].price}] - ${products[index].description}`
             )
             .setDescription("Warehouse - ASIN tracker")
             .setURL(`https://smile.amazon.com/dp/${products[index].asin}?aod=1`)

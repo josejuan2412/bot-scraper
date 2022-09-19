@@ -13,12 +13,37 @@ class Db {
 }
 
 class DynamoDb extends Db {
-  getProducts() {
+  config = null;
+  constructor() {
+    this.config = {
+      region: process.env.AWS_DEFAULT_REGION,
+      //endpoint: "http://dynamodb.us-east-1.amazonaws.com",
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.WWCf9S9EFlsQqWkKhoV4uSQLNbnhk8Qs56K9s6Ky,
+    };
+  }
+  async getProducts() {
     return [];
   }
+  async getOffers(id) {}
 }
 
 module.exports = {
   Db,
   DynamoDb,
 };
+
+/*
+function Scheluder() {
+  const dynamoDb = new DynamoDb();
+
+  const products = dynamoDb.getProducts();
+  const promises = [];
+  for (const product of products) {
+    promises.push(launchLambda(product.id, product.price));
+  }
+  await Promise.all(promises);
+}
+
+function launchLambda(id, price) {}
+*/

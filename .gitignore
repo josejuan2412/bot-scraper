@@ -32,6 +32,8 @@ docker/
 uploads/
 $RECYCLE.BIN/
 
+.nova
+
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
