@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Amazon warehouse scraper",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "jest"
   },

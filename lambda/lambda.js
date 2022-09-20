@@ -9,7 +9,6 @@ async function trackOffers(asin, price, description) {
   const scraper = new Scraper();
   const dynamoDb = new DynamoDb();
   const notification = new DiscordNotification();
-
   const page = await browser.setupBrowser(asin);
   const offers = await scraper.getOffers(page, asin, price);
   if (offers.length > 0) {
@@ -22,13 +21,13 @@ async function trackOffers(asin, price, description) {
           asin,
           offer.price,
           description,
-          offer.checkoutURL,
+          offer.checkoutUrl,
         );
         await dynamoDb.upsertOffer({
           asin,
           price: offer.price,
-          offerId: offer.offerId,
-          checkoutUrl: offer.checkoutURL,
+          offerId: offer.offerID,
+          checkoutUrl: offer.checkoutUrl,
         });
       }
     }
