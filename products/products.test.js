@@ -1,6 +1,6 @@
 const { Products } = require("./products");
 
-describe("products", () => {
+describe.skip("products", () => {
   test("get all tracked products", async () => {
     const products = new Products();
     const response = await products.getProducts();
