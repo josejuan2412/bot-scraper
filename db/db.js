@@ -1,5 +1,8 @@
 const AWS = require("aws-sdk");
 const { DateTime } = require("luxon");
+
+require("dotenv/config");
+
 class Db {
   async getProducts() {
     throw new Error("getOffers method not implemented");
@@ -84,7 +87,7 @@ class DynamoDb extends Db {
 
     const secondsToExpire = 10;
     const expireAt = Math.trunc(
-      DateTime.now().plus({ seconds: secondsToExpire }).toSeconds()
+      DateTime.now().plus({ seconds: secondsToExpire }).toSeconds(),
     );
     var params = {
       TableName: "Offers",
@@ -128,18 +131,3 @@ module.exports = {
   Db,
   DynamoDb,
 };
-
-/*
-function Scheluder() {
-  const dynamoDb = new DynamoDb();
-
-  const products = dynamoDb.getProducts();
-  const promises = [];
-  for (const product of products) {
-    promises.push(launchLambda(product.id, product.price));
-  }
-  await Promise.all(promises);
-}
-
-function launchLambda(id, price) {}
-*/
