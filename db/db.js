@@ -1,4 +1,5 @@
 const AWS = require("aws-sdk");
+const { DateTime } = require("luxon");
 class Db {
   async getProducts() {
     throw new Error("getOffers method not implemented");
@@ -50,6 +51,55 @@ class DynamoDb extends Db {
     };
     var result = await this.db.query(params).promise();
     return result.Items.map(this.mapOffers) || [];
+  }
+
+  async getOffer(asin, price) {
+    var params = {
+      TableName: "Offers",
+      KeyConditionExpression: "asin = :asin and price = :price",
+      ExpressionAttributeValues: {
+        ":asin": {
+          S: asin,
+        },
+        ":price": {
+          N: `${price}`,
+        },
+      },
+    };
+    var result = await this.db.query(params).promise();
+    if (result.Items.length) {
+      return result.Items.map(this.mapOffers)[0];
+    }
+    return null;
+  }
+
+  async upsertOffer(offer) {
+    const { asin, price, offerId, checkoutUrl } = offer;
+
+    /* If TTL is set propertly the code below is not required
+    const previousOffer = await this.getOffer(asin, price);
+    if (previousOffer) {
+      return previousOffer;
+    }*/
+
+    const secondsToExpire = 10;
+    const expireAt = Math.trunc(
+      DateTime.now().plus({ seconds: secondsToExpire }).toSeconds()
+    );
+    var params = {
+      TableName: "Offers",
+      Item: {
+        asin: { S: asin },
+        price: { N: `${price}` },
+        offer_id: { S: offerId },
+        checkout_url: { S: checkoutUrl },
+        expire_at: { N: `${expireAt}` },
+      },
+    };
+
+    await this.db.putItem(params).promise();
+
+    return offer;
   }
 
   mapProduct(item) {
