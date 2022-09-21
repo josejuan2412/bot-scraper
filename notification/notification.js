@@ -15,12 +15,10 @@ class DiscordNotification extends Notification {
     title,
     checkoutUrl,
   ) {
-    console.log(`https://smile.amazon.com/dp/${asin}?aod=1`);
     const webhookClient = new WebhookClient({
       id: discordId,
       token: discordToken,
     });
-
     const embed = new EmbedBuilder()
       .setColor(0x0099ff)
       .setTitle(`[$${price}] - ${title}`)

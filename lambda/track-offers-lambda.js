@@ -25,7 +25,7 @@ async function run({ asin, price, description }) {
   return new Promise(async (resolve, reject) => {
     const seconds = 15;
     let count = 0;
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       if (count === MAX_COUNT) {
         clearInterval(interval);
         resolve({ success: true });
