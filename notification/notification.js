@@ -10,11 +10,12 @@ class DiscordNotification extends Notification {
   async sendNotification(
     discordId,
     discordToken,
-    title,
-    price,
     asin,
+    price,
+    title,
     checkoutUrl,
   ) {
+    console.log(`https://smile.amazon.com/dp/${asin}?aod=1`);
     const webhookClient = new WebhookClient({
       id: discordId,
       token: discordToken,
@@ -24,17 +25,18 @@ class DiscordNotification extends Notification {
       .setColor(0x0099ff)
       .setTitle(`[$${price}] - ${title}`)
       .setDescription("Warehouse - ASIN tracker")
+      .setTimestamp()
       .setURL(`https://smile.amazon.com/dp/${asin}?aod=1`)
       .addFields({
         name: "Checkout URL:",
         value: checkoutUrl,
         inline: true,
-      })
-      .setTimestamp();
-    // await webhookClient.send({
-    //   avatarURL: "",
-    //   embeds: [embed],
-    // });
+      });
+
+    await webhookClient.send({
+      avatarURL: "",
+      embeds: [embed],
+    });
     return embed;
   }
 }
