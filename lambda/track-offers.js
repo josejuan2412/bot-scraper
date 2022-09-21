@@ -21,7 +21,7 @@ async function trackOffers(asin, price, description) {
           asin,
           offer.price,
           description,
-          offer.checkoutUrl,
+          offer.checkoutUrl
         );
         await dynamoDb.upsertOffer({
           asin,
