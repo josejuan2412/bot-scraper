@@ -4,7 +4,7 @@
   "description": "Amazon warehouse scraper",
   "main": "index.js",
   "scripts": {
-    "zip:track": "rm -rf dist && cp track-offers-lambda.js index.js && mkdir -p dist && 7z a -r track-offer-function.zip \".env\" index.js node_modules/ db/ lambda/ notification/ products/ scraper && rm index.js && mv track-offer-function.zip \"./dist/track-offer-function-$(date '+%s').zip\"",
+    "zip:track": "rm -rf dist && cp track-offers-lambda.js index.js && mkdir -p dist && 7z a -r track-offer-function.zip \".env\" index.js node_modules/ db/ lambda/ notifications/ products/ scraper && rm index.js && mv track-offer-function.zip \"./dist/track-offer-function-$(date '+%s').zip\"",
     "test": "jest"
   },
   "repository": {
