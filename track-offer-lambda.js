@@ -1,5 +1,5 @@
 // Este es el entry point del lambda que trackea un solo asin
-const { trackOffers } = require("./track-offers");
+const { trackOffers } = require("./lambda/track-offers");
 const MAX_COUNT = 30;
 
 exports.handler = async (event) => {

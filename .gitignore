@@ -33,6 +33,7 @@ uploads/
 $RECYCLE.BIN/
 
 .nova
+*.zip
 
 .DS_Store
 Thumbs.db

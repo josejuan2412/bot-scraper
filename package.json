@@ -4,6 +4,7 @@
   "description": "Amazon warehouse scraper",
   "main": "index.js",
   "scripts": {
+    "zip:track": "mkdir -p dist && mv track-offer-lambda.js index.js && 7z a -r track-offer-function.zip \".env\" index.js node_modules/ db/ lambda/ notification/ products/ scraper && mv index.js track-offer-lambda.js && mv track-offer-function.zip ./dist/track-offer-function.zip",
     "test": "jest"
   },
   "repository": {
@@ -21,11 +22,10 @@
     "aws-sdk": "^2.1215.0",
     "axios": "^0.27.2",
     "cheerio": "^1.0.0-rc.12",
-    "chrome-aws-lambda": "~5.5.0",
-    "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
     "luxon": "^3.0.3",
-    "puppeteer-core": "^18.0.3",
+    "chrome-aws-lambda": "^10.1.0",
+    "puppeteer-core": "^10.0.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

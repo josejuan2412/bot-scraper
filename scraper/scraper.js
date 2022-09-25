@@ -4,6 +4,7 @@ class Scraper {
   async getOffers(page, product, priceTarget) {
     // page.reload(); //verify if there's a way to prevent this
     let html = await page.evaluate(() => document.body.innerHTML);
+    console.log(`I RECEIVE THE HTML`)
     const $ = cheerio.load(html);
     let offerList = [];
     $("#aod-offer-list", html).each((id, item) => {
@@ -35,6 +36,7 @@ class Scraper {
         }
       });
     });
+    console.log(`Offerlist`, offerList);
     return offerList;
   }
 }
