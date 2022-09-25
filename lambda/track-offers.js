@@ -1,7 +1,7 @@
 const { DynamoDb } = require("../db/db");
 const { Scraper } = require("../scraper/scraper");
 const { Browser } = require("../scraper/browser");
-const { discordNotification } = require("./notification");
+const { discordNotification } = require("../notifications/discord");
 require("dotenv/config");
 
 async function trackOffers({ browser, asin, price, description }) {
