@@ -35,6 +35,7 @@ async function run({ asin, price, description }) {
 				);
 				clearInterval(interval);
 				resolve({ success: true });
+				return;
 			}
 			try {
 				console.log(
@@ -53,9 +54,8 @@ async function run({ asin, price, description }) {
 					'\n',
 					e.message
 				);
-				reject(e);
 			}
 			count += 1;
-		}, seconds);
+		}, seconds * 1000);
 	});
 }
