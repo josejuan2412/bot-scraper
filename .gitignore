@@ -35,6 +35,8 @@ $RECYCLE.BIN/
 .nova
 *.zip
 
+index.js
+
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate

@@ -4,7 +4,7 @@ require("dotenv/config");
 // Pagina de referencia
 // https://aws.plainenglish.io/invocation-of-one-lambda-from-another-f233d578bdeb
 
-describe.only("Track Offer Lambda", () => {
+describe.skip("Track Offer Lambda", () => {
   let config;
   beforeAll(() => {
     config = {

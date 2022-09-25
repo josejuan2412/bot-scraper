@@ -1,7 +1,7 @@
 const { Scraper } = require("./scraper");
 const { Browser } = require("./browser");
 
-describe.only("Scraper", () => {
+describe.skip("Scraper", () => {
   test("get product offers", async () => {
     const browser = new Browser();
     const scraper = new Scraper();
