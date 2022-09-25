@@ -26,23 +26,16 @@ async function run({ asin, price, description }) {
 		console.log(`SETUP BROWSER`);
 		const browser = await Browser.build();
 		console.log(`SUCCESS SETTING UP BROWSER`);
-		const seconds = 15;
+		const seconds = 5;
 		let count = 0;
-		const interval = setInterval(async () => {
-			if (count === MAX_COUNT) {
-				console.log(
-					`COMPLETE MAX COUNT (${MAX_COUNT}) for asin "${asin}"`
-				);
-				clearInterval(interval);
-				resolve({ success: true });
-				return;
-			}
+		do {
 			try {
 				console.log(
 					`Intent #${count + 1} tracking asin "${asin}". TS: `,
 					new Date()
 				);
 				await trackOffers({ browser, asin, price, description });
+				await timeout(seconds * 1000);
 				console.log(
 					`Success #${count + 1} tracking "${asin}". TS: `,
 					new Date()
@@ -56,6 +49,11 @@ async function run({ asin, price, description }) {
 				);
 			}
 			count += 1;
-		}, seconds * 1000);
+		} while(count !== MAX_COUNT);
+		resolve({success: true});
 	});
+}
+
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
