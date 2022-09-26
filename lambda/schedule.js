@@ -1,18 +1,35 @@
-const { Products } = require("./products/products");
-const { trackOffers } = require("./lambda/lambda");
+const { Products } = require("../products/products");
+const AWS = require("aws-sdk");
+require("dotenv/config");
 
-async function schedule() {
+async function Schedule() {
   const productList = new Products();
   const products = await productList.getProducts();
   let promises = [];
+  AWS.config.update({
+    accessKeyId: process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  });
+  var lambda = new AWS.Lambda();
   for (const product of products) {
-    // here we create all the lambdas for all products, next function gets replaced
+    var params = {
+      FunctionName: "track-offers",
+      InvocationType: "Event",
+      Payload: JSON.stringify({
+        asin: product.asin,
+        price: product.price,
+        description: product.description,
+      }),
+    };
     promises.push(
-      await trackOffers(product.asin, product.price, product.description),
+      await lambda.invoke(params, function (err, data) {
+        if (err) console.log(err, err.stack);
+        else console.log(data);
+      }),
     );
   }
-  Promise.all(promises); //await required?
-  console.log("promises sent");
+  await Promise.all(promises);
 }
-
-schedule();
+module.exports = {
+  Schedule,
+};
