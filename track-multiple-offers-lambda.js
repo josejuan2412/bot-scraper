@@ -1,8 +1,7 @@
 // Este es el entry point del lambda que trackea un solo asin
 const { Browser } = require('./scraper/browser');
 const { trackOffers } = require('./lambda/track-offers');
-const { first } = require('cheerio/lib/api/traversing');
-const MAX_COUNT = 5;
+const MAX_COUNT = 3;
 
 exports.handler = async (event) => {
 	const response = {
@@ -38,7 +37,7 @@ async function run({ products }) {
                 product = clone(product);
 				const lastIndex = promiseGroup.length - 1;
                 // Adds promises until it reaches the max;
-				if (promiseGroup[lastIndex].length <= MAX_COUNT) {
+				if (promiseGroup[lastIndex].length < MAX_COUNT) {
 					promiseGroup[lastIndex].push(
 						processProduct(product, browser, count)
 					);
