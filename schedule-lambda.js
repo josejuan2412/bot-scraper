@@ -34,3 +34,5 @@ async function run() {
     resolve({ success: true });
   });
 }
+
+run();

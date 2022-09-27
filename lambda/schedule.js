@@ -22,7 +22,7 @@ async function Schedule() {
       }),
     };
     promises.push(
-      await lambda.invoke(params, function (err, data) {
+      lambda.invoke(params, function (err, data) {
         if (err) console.log(err, err.stack);
         else console.log(data);
       }),
@@ -30,6 +30,7 @@ async function Schedule() {
   }
   await Promise.all(promises);
 }
+
 module.exports = {
   Schedule,
 };

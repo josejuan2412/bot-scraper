@@ -4,7 +4,7 @@ class Scraper {
   async getOffers(page, product, priceTarget) {
     // page.reload(); //verify if there's a way to prevent this
     let html = await page.evaluate(() => document.body.innerHTML);
-    console.log(`I RECEIVE THE HTML`)
+    console.log(`I RECEIVE THE HTML`);
     const $ = cheerio.load(html);
     let offerList = [];
     $("#aod-offer-list", html).each((id, item) => {
@@ -22,7 +22,11 @@ class Scraper {
           let offerElement = $(buttonDiv).find("span.a-declarative");
           const offerAttribute = offerElement[0].attribs["data-aod-atc-action"];
           const offerPrice = parseFloat(
-            $(row).find("span.a-offscreen").text().substring(1),
+            $(row)
+              .find("span.a-offscreen")
+              .text()
+              .substring(1)
+              .replace(",", ""),
           );
           const offerID = JSON.parse(offerAttribute).oid;
           if (offerPrice < priceTarget)
