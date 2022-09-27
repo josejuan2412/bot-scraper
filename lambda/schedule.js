@@ -11,7 +11,9 @@ async function Schedule() {
     secretAccessKey: process.env.SECRET_ACCESS_KEY,
   });
   var lambda = new AWS.Lambda();
-  for (const product of products) {
+  console.log(`I will schedule this amount of products: ${products.length}`);
+  for(let i = 0; i < products.length; i++) {
+    const product = products[i];
     var params = {
       FunctionName: "track-offers",
       InvocationType: "Event",
@@ -21,14 +23,24 @@ async function Schedule() {
         description: product.description,
       }),
     };
-    promises.push(
-      lambda.invoke(params, function (err, data) {
-        if (err) console.log(err, err.stack);
-        else console.log(data);
-      }),
-    );
+    promises.push(trackOffer(params, i, product.asin));
   }
   await Promise.all(promises);
+}
+
+function trackOffer(params, index, asin) {
+  return new Promise((resolve, reject) => {
+    console.log(`Product ${index}: "${asin}"`)
+    lambda.invoke(params, function (err, data) {
+      if (err) {
+        console.log(`The product #${index} "${asin}"`);
+        reject(err);
+      };
+      console.log(`For the product #${index} "${asin}" the data is`, data);
+      resolve(data)
+    })
+  })
+
 }
 
 module.exports = {
