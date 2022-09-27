@@ -10,7 +10,7 @@ async function Schedule() {
     accessKeyId: process.env.ACCESS_KEY_ID,
     secretAccessKey: process.env.SECRET_ACCESS_KEY,
   });
-  var lambda = new AWS.Lambda();
+  
   console.log(`I will schedule this amount of products: ${products.length}`);
   for(let i = 0; i < products.length; i++) {
     const product = products[i];
@@ -29,8 +29,10 @@ async function Schedule() {
 }
 
 function trackOffer(params, index, asin) {
+  
   return new Promise((resolve, reject) => {
     console.log(`Product ${index}: "${asin}"`)
+    var lambda = new AWS.Lambda();
     lambda.invoke(params, function (err, data) {
       if (err) {
         console.log(`The product #${index} "${asin}"`);
