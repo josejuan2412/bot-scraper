@@ -10,9 +10,9 @@ async function Schedule() {
     accessKeyId: process.env.ACCESS_KEY_ID,
     secretAccessKey: process.env.SECRET_ACCESS_KEY,
   });
-  
+
   console.log(`I will schedule this amount of products: ${products.length}`);
-  for(let i = 0; i < products.length; i++) {
+  for (let i = 0; i < products.length; i++) {
     const product = products[i];
     var params = {
       FunctionName: "track-offers",
@@ -29,20 +29,18 @@ async function Schedule() {
 }
 
 function trackOffer(params, index, asin) {
-  
   return new Promise((resolve, reject) => {
-    console.log(`Product ${index}: "${asin}"`)
+    console.log(`Product ${index}: "${asin}"`);
     var lambda = new AWS.Lambda();
     lambda.invoke(params, function (err, data) {
       if (err) {
         console.log(`The product #${index} "${asin}"`);
         reject(err);
-      };
+      }
       console.log(`For the product #${index} "${asin}" the data is`, data);
-      resolve(data)
-    })
-  })
-
+      resolve(data);
+    });
+  });
 }
 
 module.exports = {
