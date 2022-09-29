@@ -1,6 +1,6 @@
 const { DynamoDb } = require("./db");
 
-describe.only("DynamoDb", () => {
+describe("DynamoDb", () => {
   beforeEach(() => {
     jest.setTimeout(60000);
   });
