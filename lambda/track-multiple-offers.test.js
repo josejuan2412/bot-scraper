@@ -4,7 +4,7 @@ const { trackMultipleOffers } = require("./track-multiple-offers");
 const products = [
   {
     asin: "B08ZJQVV6G",
-    price: 100,
+    price: 2000,
     description:
       "ASUS ZenBook Pro Duo 15 OLED UX582 Laptop, 15.6 OLED 4K UHD Touch Display, Intel Core i7-10870H, 16GB RAM, 1TB SSD, GeForce RTX 3070, ScreenPad Plus, Windows 10 Pro, Celestial Blue, UX582LR-XS74T",
   },
