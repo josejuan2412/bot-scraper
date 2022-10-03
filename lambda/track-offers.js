@@ -10,6 +10,9 @@ async function trackOffers({ browser, asin, price, description }) {
   const dynamoDb = new DynamoDb();
   const page = await newBrowser.getPage(asin);
   const offers = await scraper.getOffers(page, asin, price);
+  if(page) {
+    page.close();
+  }
   console.log(`Total of offers: ${offers.length}`);
   if (offers.length > 0) {
     for (const offer of offers) {
