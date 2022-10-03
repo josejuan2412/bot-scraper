@@ -1,8 +1,5 @@
 const AWS = require("aws-sdk");
 require("dotenv/config");
-// TODO
-// Pagina de referencia
-// https://aws.plainenglish.io/invocation-of-one-lambda-from-another-f233d578bdeb
 
 describe.skip("Track Offer Lambda", () => {
   let config;
@@ -26,7 +23,7 @@ describe.skip("Track Offer Lambda", () => {
     const params = {
       FunctionName:
         "arn:aws:lambda:us-east-1:127729251872:function:track-offers",
-      //InvocationType: "RequestResponse",
+      InvocationType: "Event",
       LogType: "Tail",
       Payload: JSON.stringify(data),
     };

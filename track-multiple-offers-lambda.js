@@ -1,6 +1,7 @@
 // Este es el entry point del lambda que trackea un solo asin
 const { Browser } = require("./scraper/browser");
 const { trackMultipleOffers } = require("./lambda/track-multiple-offers");
+const { product } = require("puppeteer-core");
 
 exports.handler = async (event) => {
   const response = {
@@ -21,6 +22,8 @@ exports.handler = async (event) => {
 };
 
 async function run({ products }) {
+  console.log("AQUI INICIA EL LAMBDA");
+  console.log(products);
   return new Promise(async (resolve) => {
     console.log(`SETUP BROWSER`);
     const browser = await Browser.build();

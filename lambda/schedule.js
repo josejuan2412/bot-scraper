@@ -1,8 +1,10 @@
 const { Products } = require("../products/products");
+
 const AWS = require("aws-sdk");
 require("dotenv/config");
 
 async function Schedule() {
+  const MAX_COUNT = 3;
   const productList = new Products();
   const products = await productList.getProducts();
   let promises = [];
@@ -10,34 +12,50 @@ async function Schedule() {
     accessKeyId: process.env.ACCESS_KEY_ID,
     secretAccessKey: process.env.SECRET_ACCESS_KEY,
   });
+  let [...arr] = products;
+  var splits = [];
+  while (arr.length) {
+    splits.push(arr.splice(0, MAX_COUNT));
+  }
+  console.log(
+    `I will schedule this amount of: ${
+      products.length
+    } products into: ${Math.ceil(products.length / MAX_COUNT)} lambdas`,
+  );
+  for (let i = 0; i < Math.ceil(products.length / MAX_COUNT); i++) {
+    const interval = splits[i];
 
-  console.log(`I will schedule this amount of products: ${products.length}`);
-  for (let i = 0; i < products.length; i++) {
-    const product = products[i];
     var params = {
-      FunctionName: "track-offers",
+      FunctionName:
+        "arn:aws:lambda:us-east-1:127729251872:function:track-offers",
       InvocationType: "Event",
       Payload: JSON.stringify({
-        asin: product.asin,
-        price: product.price,
-        description: product.description,
+        products: interval,
       }),
     };
-    promises.push(trackOffer(params, i, product.asin));
+    promises.push(trackOffers(params, i, interval));
   }
   await Promise.all(promises);
 }
 
-function trackOffer(params, index, asin) {
+function trackOffers(params, index, interval) {
   return new Promise((resolve, reject) => {
-    console.log(`Product ${index}: "${asin}"`);
+    console.log(
+      `Lambda #${index} tracking: "${interval.map((value) => {
+        return value.asin + "";
+      })}"`,
+    );
     var lambda = new AWS.Lambda();
     lambda.invoke(params, function (err, data) {
       if (err) {
-        console.log(`The product #${index} "${asin}"`);
+        console.log(
+          `Error in Lambda #${index} tracking: "${interval.map((value) => {
+            return value.asin + "";
+          })}"`,
+        );
         reject(err);
       }
-      console.log(`For the product #${index} "${asin}" the data is`, data);
+      console.log(`For the Lambda #${index} the data is`, data);
       resolve(data);
     });
   });
