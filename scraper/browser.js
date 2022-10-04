@@ -16,6 +16,15 @@ class Browser {
     return page;
   }
 
+  async loadPage(url) {
+    let page = await this.browser.newPage();
+    await page.goto(url, {
+      waitUntil: ["load", "networkidle0", "networkidle2"],
+      timeout: 0,
+    });
+    return page;
+  }
+
   static async build() {
     const executablePath =
       process.env.NODE_ENV === "local"
