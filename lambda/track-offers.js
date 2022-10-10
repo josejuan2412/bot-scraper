@@ -1,7 +1,7 @@
 const { DynamoDb } = require("../db/db");
 const { Scraper } = require("../scraper/scraper");
 const { Browser } = require("../scraper/browser");
-const { discordNotification } = require("../notifications/discord");
+// const { discordNotification } = require("../notifications/discord");
 require("dotenv/config");
 
 async function trackOffers({ browser, asin, price, description }) {
@@ -18,14 +18,14 @@ async function trackOffers({ browser, asin, price, description }) {
     for (const offer of offers) {
       const offerExist = await dynamoDb.getOffer(asin, offer.price);
       if (!offerExist) {
-        await discordNotification(
+        /*await discordNotification(
           process.env.DISCORD_ID,
           process.env.DISCORD_TOKEN,
           asin,
           offer.price,
           description,
           offer.checkoutUrl,
-        );
+        );*/
         await dynamoDb.upsertOffer({
           asin,
           price: offer.price,
