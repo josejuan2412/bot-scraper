@@ -4,7 +4,7 @@ const AWS = require("aws-sdk");
 require("dotenv/config");
 
 async function Schedule() {
-  const MAX_COUNT = 3;
+  const MAX_COUNT = 2;
   const productList = new Products();
   const products = await productList.getProducts();
   let promises = [];
