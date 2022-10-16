@@ -1,4 +1,4 @@
-const { Browser } = require("../scraper/browser");
+const { BrowserClient } = require("../scraper/browser-client");
 const { trackMultipleOffers } = require("./track-multiple-offers");
 
 const products = [
@@ -15,7 +15,7 @@ const products = [
       "Western Digital 1TB WD Blue 3D NAND Internal PC SSD - SATA III 6 Gb/s, M.2 2280, Up to 560 MB/s - WDS100T2B0B",
   },
 ];
-describe.only("Track Multiple Offers", () => {
+describe.skip("Track Multiple Offers", () => {
   beforeEach(() => {
     jest.setTimeout(60000);
   });

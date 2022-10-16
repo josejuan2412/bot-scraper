@@ -1,6 +1,6 @@
 const { DynamoDb } = require("../db/db");
 const { Scraper } = require("../scraper/scraper");
-const { Browser } = require("../scraper/browser");
+const { BrowserClient } = require("../scraper/browser-client");
 const { discordNotification } = require("../notifications/discord");
 require("dotenv/config");
 

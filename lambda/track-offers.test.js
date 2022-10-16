@@ -1,4 +1,4 @@
-const { Browser } = require("../scraper/browser");
+const { BrowserClient } = require("../scraper/browser-client");
 const { trackOffers } = require("./track-offers");
 
 describe.skip("Track Offers", () => {

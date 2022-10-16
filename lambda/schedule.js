@@ -3,7 +3,7 @@ const { Products } = require("../products/products");
 const AWS = require("aws-sdk");
 require("dotenv/config");
 
-async function Schedule() {
+export async function Schedule() {
   const MAX_COUNT = 2;
   const productList = new Products();
   const products = await productList.getProducts();
@@ -60,7 +60,3 @@ function trackOffers(params, index, interval) {
     });
   });
 }
-
-module.exports = {
-  Schedule,
-};

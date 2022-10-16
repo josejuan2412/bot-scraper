@@ -1,9 +1,8 @@
-const { Scraper } = require("./scraper");
-const { BrowserClient } = require("./browser-client");
+
 
 describe.skip("Scraper", () => {
   test("get product offers", async () => {
-    const browser = new BrowserClient();
+    const browser = new Browser();
     const scraper = new Scraper();
     const product = { asin: "B08ZJQVV6G", price: 2000 };
     const page = await browser.setupBrowser(product.asin);
