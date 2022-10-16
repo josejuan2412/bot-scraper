@@ -1,9 +1,16 @@
 require('dotenv/config');
+const fs = require('fs');
 const { bufferCount, concatMap, of, delay, filter } = require('rxjs');
 const { DynamoDb } = require('./db/db.js');
 const {
 	TrackOffersScheduler,
 } = require('./scheduler/track-offer-scheduler.js');
+// Control Variables
+const DELAY_BETWEEN_GROUPS = 10 * 1000; // 10 Seconds
+const FETCH_FREQUENCY = 120 * 1000; // Fetch the products every minute
+const WORKER_GROUP_LENGTH = 5;
+let fetchFromCache = true;
+
 const db = new DynamoDb();
 // This is for test purposes
 let getData = async () => {
@@ -21,12 +28,27 @@ let getData = async () => {
 };
 
 getData = async () => {
-	return await db.getProducts();
+	if (!fetchFromCache) {
+		const products = await db.getProducts();
+		fs.writeFileSync(
+			'products.json',
+			JSON.stringify(products, null, 2),
+			'utf-8'
+		);
+		fetchFromCache = true;
+		return products;
+	}
+
+	return JSON.parse(fs.readFileSync('products.json', 'utf-8'));
 };
 
 run()
-	.then(() => {
+	.then((browser) => {
 		console.log(`FINISH PROCESISNG`);
+		return browser.close();
+	})
+	.then(() => {
+		console.log(`Finish closing the browser`);
 	})
 	.catch(console.error);
 
@@ -34,31 +56,41 @@ async function run() {
 	return new Promise(async (resolve, reject) => {
 		const trackOffersScheduler = new TrackOffersScheduler({
 			getData,
+			fetchFrequency: FETCH_FREQUENCY,
 		});
 
 		let observable;
 		try {
 			observable = await trackOffersScheduler.execute();
 		} catch (e) {
+			if (trackOffersScheduler.browser) {
+				await trackOffersScheduler.browser.close();
+			}
 			reject(e);
 		}
 
 		observable
 			.pipe(
-				bufferCount(5),
-				concatMap((x) => of(x).pipe(delay(1000)))
+				bufferCount(WORKER_GROUP_LENGTH),
+				concatMap((x) => of(x).pipe(delay(DELAY_BETWEEN_GROUPS)))
 			)
 			.subscribe({
 				next: (workers) => {
-					console.log(`Workers`, workers);
 					Promise.all(workers.map((w) => w.execute()))
 						.then(() => {
 							console.log(`Success processing group`);
 						})
 						.catch(console.error);
 				},
-				error: reject,
-				complete: resolve,
+				error: async (err) => {
+					if (trackOffersScheduler.browser) {
+						await trackOffersScheduler.browser.close();
+					}
+					reject(err);
+				},
+				complete: () => {
+					resolve(trackOffersScheduler.browser);
+				},
 			});
 	});
 }

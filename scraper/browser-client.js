@@ -1,4 +1,9 @@
 const puppeteer = require('puppeteer');
+const headless = true;
+const dimensions = {
+	width: 1440,
+	height: 700,
+};
 class BrowserClient {
 	constructor(browser) {
 		this.browser = browser;
@@ -7,8 +12,8 @@ class BrowserClient {
 		const url = `https://smile.amazon.com/dp/${product}?aod=1`;
 		let page = await this.browser.newPage();
 		await page.goto(url, {
-			waitUntil: ['load', 'networkidle0', 'networkidle2'],
-			timeout: 0,
+			waitUntil: ['domcontentloaded'],
+			// timeout: 0,
 		});
 		return page;
 	}
@@ -16,8 +21,13 @@ class BrowserClient {
 	async getPageHTML(asin) {
 		const url = `https://smile.amazon.com/dp/${asin}?aod=1`;
 		let page = await this.browser.newPage();
+		await page.setViewport({
+			width: dimensions.width,
+			height: dimensions.height,
+			deviceScaleFactor: 1,
+		});
 		await page.goto(url, {
-			waitUntil: ['load', 'networkidle0', 'networkidle2'],
+			waitUntil: ['domcontentloaded'],
 			timeout: 0,
 		});
 		let html = await page.evaluate(() => document.body.innerHTML);
@@ -38,13 +48,13 @@ class BrowserClient {
 		let args = [
 			/// ...chromium.args,
 			'--disable-features=AudioServiceOutOfProcess',
-			'--disable-gpu',
-			'--disable-software-rasterize',
+			'--no-sandbox',
+			`--window-size=${dimensions.width},${dimensions.height}`,
 		];
 		return await puppeteer.launch({
 			args: args,
 			executablePath: process.env.CHROMIUM_PATH,
-			headless: false,
+			headless,
 		});
 	}
 }

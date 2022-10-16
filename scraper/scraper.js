@@ -29,7 +29,7 @@ class Scraper {
 							.replace(',', '')
 					);
 					const offerID = JSON.parse(offerAttribute).oid;
-					if (offerPrice < priceTarget)
+					if (offerPrice < priceTarget) {
 						offers.push({
 							price: offerPrice,
 							seller: 'Amazon Warehouse',
@@ -37,13 +37,22 @@ class Scraper {
 							ASIN: asin,
 							checkoutUrl: `https://smile.amazon.com/gp/checkoutportal/enter-checkout.html?buyNow=1&skipCart=1&offeringID=${offerID}&quantity=1`,
 						});
+					} else {
+						offers.push({
+							price: offerPrice,
+							seller: 'Amazon Warehouse',
+							offerID: offerID,
+							ASIN: asin,
+							checkoutUrl: `https://smile.amazon.com/gp/checkoutportal/enter-checkout.html?buyNow=1&skipCart=1&offeringID=${offerID}&quantity=1`,
+						});
+					}
 				}
 			});
 		});
 		return offers;
 	}
 
-	async discoverOffers({html, asin}) {
+	async discoverOffers({ html, asin }) {
 		// let html = await page.evaluate(() => document.body.innerHTML);
 		console.log(`I RECEIVE THE HTML`);
 		const $ = cheerio.load(html);

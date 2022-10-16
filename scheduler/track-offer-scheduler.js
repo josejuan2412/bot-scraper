@@ -4,34 +4,44 @@ const { Discord } = require('../notifications/discord');
 const { BrowserClient } = require('../scraper/browser-client');
 const { Scraper } = require('../scraper/scraper');
 
-const INTERVAL = 10000;
+const INTERVAL = 10 * 000;
 class TrackOffersScheduler {
-	constructor({ getData }) {
+	browser = null;
+	db = null;
+	discord = null;
+	constructor({ getData, fetchFrequency }) {
 		this.getData = getData;
+		this.fetchFrequency = fetchFrequency || INTERVAL;
 	}
 
 	async execute() {
 		this.browser = await BrowserClient.build();
-		const db = new DynamoDb();
-		const discord = new Discord();
-		return new Observable((subscriber) => {
+		this.db = new DynamoDb();
+		this.discord = new Discord();
+		return new Observable(async (subscriber) => {
+			await this.run(subscriber);
 			setInterval(async () => {
-				try {
-					for (const product of await this.getData()) {
-						console.log(`Product`, product);
-						const worker = new TrackOffersWorker({
-							product,
-							browser: this.browser,
-							db,
-							discord,
-						});
-						subscriber.next(worker);
-					}
-				} catch (e) {
-					console.error(e);
-				}
-			}, INTERVAL);
+				await this.run(subscriber);
+			}, this.fetchFrequency);
 		});
+	}
+
+	async run(subscriber) {
+		try {
+			const products = await this.getData();
+			console.log(`I fetch ${products.length} products`);
+			for (const product of products) {
+				const worker = new TrackOffersWorker({
+					product,
+					browser: this.browser,
+					db: this.db,
+					discord: this.discord,
+				});
+				subscriber.next(worker);
+			}
+		} catch (e) {
+			console.error(e);
+		}
 	}
 }
 
@@ -44,13 +54,24 @@ class TrackOffersWorker {
 	}
 
 	async execute() {
-		const { asin, price } = this.product;
+		const { asin, price, description } = this.product;
+		// Await randomness timeout in the request
+		console.log(`Processing (${asin}): "${description}"`)
+		await this.addDelay();
 		const html = await this.browserClient.getPageHTML(asin);
 		const offers = Scraper.getOffers({
 			html,
 			asin,
 			priceTarget: price,
 		});
+		if(!offers.length) {
+			console.log(`Offers not found for "${asin}"`);
+		} else {
+			console.log(
+				`For "${description}" (${asin}) i found ${offers.length} offers`
+			);
+		}
+		
 		for (const offer of offers) {
 			const offerExist = await this.db.getOffer(asin, offer.price);
 			if (!offerExist) {
@@ -64,6 +85,12 @@ class TrackOffersWorker {
 			}
 		}
 		return offers;
+	}
+
+	async addDelay() {
+		const minSeconds = 0;
+		const maxSeconds = 10;
+		await this.timeout(randomNumber(minSeconds, maxSeconds));
 	}
 
 	notify(offer) {
@@ -85,6 +112,14 @@ class TrackOffersWorker {
 			checkoutUrl: offer.checkoutUrl,
 		});
 	}
+
+	async timeout(seconds) {
+		return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+	}
+}
+
+function randomNumber(min, max) {
+	return Math.floor(Math.random() * (max - min) + min);
 }
 
 module.exports = {

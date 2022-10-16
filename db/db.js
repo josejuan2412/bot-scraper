@@ -26,7 +26,6 @@ class DynamoDb extends Db {
 			accessKeyId: process.env.ACCESS_KEY_ID,
 			secretAccessKey: process.env.SECRET_ACCESS_KEY,
 		};
-    console.log(`CONFIG`, config);
 		AWS.config.update(config);
 		this.db = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 	}
@@ -40,8 +39,6 @@ class DynamoDb extends Db {
 				},
 			},
 		};
-		console.log(`INSIDE THE GET PRODUCTS`);
-		console.log(this.db);
 		var result = await this.db.scan(params).promise();
 		return result.Items.map(this.mapProduct) || [];
 	}
