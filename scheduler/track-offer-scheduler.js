@@ -59,11 +59,11 @@ class TrackOffersWorker {
 		console.log(`Processing (${asin}): "${description}"`)
 		await this.addDelay();
 		const html = await this.browserClient.getPageHTML(asin);
-		const offers = Scraper.getOffers({
+		let offers = Scraper.getOffers({
 			html,
 			asin,
-			priceTarget: price,
 		});
+		
 		if(!offers.length) {
 			console.log(`Offers not found for "${asin}"`);
 		} else {
@@ -72,6 +72,7 @@ class TrackOffersWorker {
 			);
 		}
 		
+		offers = offers.filter(offer => offer.price < price);
 		for (const offer of offers) {
 			const offerExist = await this.db.getOffer(asin, offer.price);
 			if (!offerExist) {

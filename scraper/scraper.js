@@ -1,7 +1,7 @@
 const cheerio = require('cheerio');
 
 class Scraper {
-	static getOffers({ html, asin, priceTarget }) {
+	static getOffers({ html, asin }) {
 		// page.reload(); //verify if there's a way to prevent this
 		// let html = await page.evaluate(() => document.body.innerHTML);
 		const $ = cheerio.load(html);
@@ -29,23 +29,13 @@ class Scraper {
 							.replace(',', '')
 					);
 					const offerID = JSON.parse(offerAttribute).oid;
-					if (offerPrice < priceTarget) {
-						offers.push({
-							price: offerPrice,
-							seller: 'Amazon Warehouse',
-							offerID: offerID,
-							ASIN: asin,
-							checkoutUrl: `https://smile.amazon.com/gp/checkoutportal/enter-checkout.html?buyNow=1&skipCart=1&offeringID=${offerID}&quantity=1`,
-						});
-					} else {
-						offers.push({
-							price: offerPrice,
-							seller: 'Amazon Warehouse',
-							offerID: offerID,
-							ASIN: asin,
-							checkoutUrl: `https://smile.amazon.com/gp/checkoutportal/enter-checkout.html?buyNow=1&skipCart=1&offeringID=${offerID}&quantity=1`,
-						});
-					}
+					offers.push({
+						price: offerPrice,
+						seller: 'Amazon Warehouse',
+						offerID: offerID,
+						ASIN: asin,
+						checkoutUrl: `https://smile.amazon.com/gp/checkoutportal/enter-checkout.html?buyNow=1&skipCart=1&offeringID=${offerID}&quantity=1`,
+					});
 				}
 			});
 		});

@@ -7,7 +7,8 @@
     "zip:track": "rm -rf dist && cp track-offers-lambda.js index.js && mkdir -p dist && 7z a -r track-offer-function.zip \".env\" index.js node_modules/ db/ lambda/ notifications/ products/ scraper && rm index.js && mv track-offer-function.zip \"./dist/track-offer-function-$(date '+%s').zip\"",
     "zip:scheduler": "rm -rf dist && cp schedule-lambda.js index.js && mkdir -p dist && 7z a -r scheduler-function.zip \".env\" index.js node_modules/ db/ lambda/ notifications/ products/ scraper && rm index.js && mv scheduler-function.zip \"./dist/scheduler-function-$(date '+%s').zip\"",
     "zip:track-offers": "rm -rf dist && cp track-multiple-offers-lambda.js index.js && mkdir -p dist && 7z a -r track-multiple-offers-function.zip \".env\" index.js node_modules/ db/ lambda/ notifications/ products/ scraper && rm index.js && mv track-multiple-offers-function.zip \"./dist/track-multiple-offers-function-$(date '+%s').zip\"",
-    "test": "jest --silent false --verbose false --runInBand"
+    "test": "jest --silent false --verbose false --runInBand",
+    "start": "node track-offers.js"
   },
   "repository": {
     "type": "git",

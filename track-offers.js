@@ -8,8 +8,8 @@ const {
 // Control Variables
 const DELAY_BETWEEN_GROUPS = 10 * 1000; // 10 Seconds
 const FETCH_FREQUENCY = 120 * 1000; // Fetch the products every minute
-const WORKER_GROUP_LENGTH = 5;
-let fetchFromCache = true;
+const WORKER_GROUP_LENGTH = 1;
+let fetchFromCache = false;
 
 const db = new DynamoDb();
 // This is for test purposes
@@ -17,17 +17,16 @@ let getData = async () => {
 	const arr = [];
 	for (let i = 0; i < 20; i++) {
 		arr.push({
-			asin: 'B07822Z77M',
-			description:
-				'Samsung SSD 860 EVO 1TB M.2 SATA Internal SSD (MZ-N6E1T0BW)',
-			createdAt: '2022-09-26T00:00:00.000Z',
-			price: 25,
-		});
+			"asin": "B07PXGQC1Q",
+			"description": "Apple AirPods (2nd Generation) Wireless Earbuds with Lightning Charging Case Included. Over 24 Hours of Battery Life, Effortless Setup. Bluetooth Headphones for iPhone",
+			"createdAt": "2022-09-26T00:00:00.000Z",
+			"price": 35
+		  });
 	}
 	return arr;
 };
 
-getData = async () => {
+/*getData = async () => {
 	if (!fetchFromCache) {
 		const products = await db.getProducts();
 		fs.writeFileSync(
@@ -40,7 +39,7 @@ getData = async () => {
 	}
 
 	return JSON.parse(fs.readFileSync('products.json', 'utf-8'));
-};
+};*/
 
 run()
 	.then((browser) => {
