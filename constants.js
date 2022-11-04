@@ -1,7 +1,7 @@
 const DELAY_BETWEEN_GROUPS = 10 * 1000; // 10 Seconds
 const FETCH_FREQUENCY = 120 * 1000; // Fetch the products every minute
 const TIERS_VALUES = {
-  high: {
+  1: {
     group: 10,
     fetchFrequency: 120,
     delay: {
@@ -9,7 +9,7 @@ const TIERS_VALUES = {
       max: 5,
     },
   },
-  medium: {
+  2: {
     group: 5,
     fetchFrequency: 240,
     delay: {
@@ -17,7 +17,7 @@ const TIERS_VALUES = {
       max: 12,
     },
   },
-  low: {
+  3: {
     group: 2,
     fetchFrequency: 360,
     delay: {

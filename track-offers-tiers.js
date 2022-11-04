@@ -65,16 +65,16 @@ async function run() {
       return;
     }
 
-    const tiers = ["high", "medium", "low"];
+    const tiers = Object.keys(TIERS_VALUES);
     try {
       for (const tier of tiers) {
         const scheduler = new TrackOffersScheduler({
           getData,
           fetchFrequency: TIERS_VALUES[tier].fetchFrequency * 1000,
-          tier: getTierNumber(tier),
+          tier: parseInt(`${tier}`, 10),
         });
         scheduler.browser = browser;
-        observables[tier] = await scheduler.execute();
+        observables[`${tier}`] = await scheduler.execute();
         console.log(`Adding observable for tier: "${tier}"`);
         processObservables(observables, tier, browser, resolve, reject);
       }
@@ -87,13 +87,12 @@ async function run() {
 }
 
 function processObservables(observables, tier, browser, resolve, reject) {
-  const tierNumber = getTierNumber(tier);
   const observable = observables[tier];
 
   const values = TIERS_VALUES[tier];
 
   observable
-    .pipe(filter((worker) => worker.product.tier === tierNumber))
+    .pipe(filter((worker) => `${worker.product.tier}` === `${tier}`))
     .pipe(
       bufferCount(values.group),
       concatMap((x) => of(x).pipe(getRandomDelay(tier)))
@@ -131,15 +130,4 @@ function generateRandomFromRange(min, max) {
   rand = Math.floor(rand * difference);
   rand = rand + min;
   return rand;
-}
-
-function getTierNumber(tier) {
-  switch (tier) {
-    case "high":
-      return 1;
-    case "medium":
-      return 2;
-    default:
-      return 3;
-  }
 }
