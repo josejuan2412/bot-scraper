@@ -2,13 +2,12 @@ require("dotenv/config");
 const fs = require("fs");
 const { bufferCount, concatMap, of, delay, filter } = require("rxjs");
 const { DynamoDb } = require("./db/db.js");
+const { BrowserClient } = require("./scraper/browser-client");
 const {
   TrackOffersScheduler,
 } = require("./scheduler/track-offer-scheduler.js");
+const { DELAY_BETWEEN_GROUPS, FETCH_FREQUENCY } = require("./constants");
 // Control Variables
-const DELAY_BETWEEN_GROUPS = 10 * 1000; // 10 Seconds
-const FETCH_FREQUENCY = 120 * 1000; // Fetch the products every minute
-const WORKER_GROUP_LENGTH = 1;
 let fetchFromCache = false;
 
 const db = new DynamoDb();
@@ -27,20 +26,20 @@ let getData = async () => {
   return arr;
 };
 
-/*getData = async () => {
-	if (!fetchFromCache) {
-		const products = await db.getProducts();
-		fs.writeFileSync(
-			'products.json',
-			JSON.stringify(products, null, 2),
-			'utf-8'
-		);
-		fetchFromCache = true;
-		return products;
-	}
+getData = async () => {
+  if (!fetchFromCache) {
+    const products = await db.getProducts();
+    fs.writeFileSync(
+      "products.json",
+      JSON.stringify(products, null, 2),
+      "utf-8"
+    );
+    fetchFromCache = true;
+    return products;
+  }
 
-	return JSON.parse(fs.readFileSync('products.json', 'utf-8'));
-};*/
+  return JSON.parse(fs.readFileSync("products.json", "utf-8"));
+};
 
 run()
   .then((browser) => {
@@ -72,7 +71,7 @@ async function run() {
     observable
       .pipe(
         bufferCount(WORKER_GROUP_LENGTH),
-        concatMap((x) => of(x).pipe(delay(DELAY_BETWEEN_GROUPS))),
+        concatMap((x) => of(x).pipe(delay(DELAY_BETWEEN_GROUPS)))
       )
       .subscribe({
         next: (workers) => {

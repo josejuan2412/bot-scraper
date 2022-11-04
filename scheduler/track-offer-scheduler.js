@@ -9,13 +9,19 @@ class TrackOffersScheduler {
   browser = null;
   db = null;
   discord = null;
-  constructor({ getData, fetchFrequency }) {
+  browser = null;
+  constructor({ getData, fetchFrequency, tier }) {
     this.getData = getData;
     this.fetchFrequency = fetchFrequency || INTERVAL;
+    if (tier) {
+      this.tier = tier;
+    }
   }
 
   async execute() {
-    this.browser = await BrowserClient.build();
+    if (!this.browser) {
+      this.browser = await BrowserClient.build();
+    }
     this.db = new DynamoDb();
     this.discord = new Discord();
     return new Observable(async (subscriber) => {
@@ -28,7 +34,10 @@ class TrackOffersScheduler {
 
   async run(subscriber) {
     try {
-      const products = await this.getData();
+      let products = await this.getData();
+      if (this.tier) {
+        products = products.filter((p) => p.tier === this.tier);
+      }
       console.log(` ${products.length} products`);
       for (const product of products) {
         const worker = new TrackOffersWorker({
@@ -54,9 +63,9 @@ class TrackOffersWorker {
   }
 
   async execute() {
-    const { asin, price, description } = this.product;
+    const { asin, price, description, tier } = this.product;
     // Await randomness timeout in the request
-    console.log(`Processing (${asin}): "${description}"`);
+    console.log(`Processing (${asin}): "${description}" with tier: ${tier}`);
     await this.addDelay();
     const html = await this.browserClient.getPageHTML(asin);
     let offers = Scraper.getOffers({
@@ -68,7 +77,7 @@ class TrackOffersWorker {
       console.log(`Offers not found for "${asin}"`);
     } else {
       console.log(
-        `For "${description}" (${asin}) i found ${offers.length} offers`,
+        `For "${description}" (${asin}) i found ${offers.length} offers`
       );
     }
 
