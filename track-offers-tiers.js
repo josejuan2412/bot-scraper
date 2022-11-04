@@ -21,6 +21,7 @@ let getData = async () => {
         "Apple AirPods (2nd Generation) Wireless Earbuds with Lightning Charging Case Included. Over 24 Hours of Battery Life, Effortless Setup. Bluetooth Headphones for iPhone",
       createdAt: "2022-09-26T00:00:00.000Z",
       price: 35,
+      tier: 1,
     });
   }
   return arr;
@@ -41,7 +42,7 @@ getData = async () => {
   return JSON.parse(fs.readFileSync("products.json", "utf-8"));
 };
 
-runWithTiers()
+run()
   .then((browser) => {
     console.log(`FINISH PROCESISNG`);
     return browser.close();
@@ -51,7 +52,7 @@ runWithTiers()
   })
   .catch(console.error);
 
-async function runWithTiers() {
+async function run() {
   return new Promise(async (resolve, reject) => {
     let browser = null;
     // CONTAINS ALL THE OBSERVABLE
@@ -64,41 +65,23 @@ async function runWithTiers() {
       return;
     }
 
-    const highTrackOffersScheduler = new TrackOffersScheduler({
-      getData,
-      fetchFrequency: TIERS_VALUES["high"].fetchFrequency * 1000,
-      tier: 1,
-    });
-
-    const mediumTrackOffersScheduler = new TrackOffersScheduler({
-      getData,
-      fetchFrequency: TIERS_VALUES["medium"].fetchFrequency * 1000,
-      tier: 2,
-    });
-
-    const lowTrackOffersScheduler = new TrackOffersScheduler({
-      getData,
-      fetchFrequency: TIERS_VALUES["low"].fetchFrequency * 1000,
-      tier: 3,
-    });
-
+    const tiers = ["high", "medium", "low"];
     try {
-      highTrackOffersScheduler.browser = browser;
-      mediumTrackOffersScheduler.browser = browser;
-      lowTrackOffersScheduler.browser = browser;
-      observables["high"] = await highTrackOffersScheduler.execute();
-      observables["medium"] = await mediumTrackOffersScheduler.execute();
-      observables["low"] = await lowTrackOffersScheduler.execute();
+      for (const tier of tiers) {
+        const scheduler = new TrackOffersScheduler({
+          getData,
+          fetchFrequency: TIERS_VALUES[tier].fetchFrequency * 1000,
+          tier: getTierNumber(tier),
+        });
+        scheduler.browser = browser;
+        observables[tier] = await scheduler.execute();
+        console.log(`Adding observable for tier: "${tier}"`);
+        processObservables(observables, tier, browser, resolve, reject);
+      }
     } catch (e) {
       await browser.close();
       reject(e);
       return;
-    }
-
-    const tiers = ["low", "high", "medium"];
-    for (const tier of tiers) {
-      console.log(`Adding observable for tier: "${tier}"`);
-      processObservables(observables, tier, browser, resolve, reject);
     }
   });
 }
@@ -142,19 +125,11 @@ function getRandomDelay(tier) {
   return delay(tierDelay * 1000);
 }
 
-function generateRandomFromRange(min = 0, max = 100) {
-  // find diff
+function generateRandomFromRange(min, max) {
   let difference = max - min;
-
-  // generate random number
   let rand = Math.random();
-
-  // multiply with difference
   rand = Math.floor(rand * difference);
-
-  // add with min value
   rand = rand + min;
-
   return rand;
 }
 
@@ -168,27 +143,3 @@ function getTierNumber(tier) {
       return 3;
   }
 }
-
-/*observable
-	.pipe(filter((ev) => ev % 2 === 0))
-	.pipe(
-		bufferCount(10),
-		concatMap((x) => of(x).pipe(delay(100)))
-	)
-	.subscribe((products) => {
-		console.log(`Par number`);
-		console.log(products);
-		console.log(`----------------`);
-	});
-
-observable
-	.pipe(filter((ev) => ev % 2 !== 0))
-	.pipe(
-		bufferCount(5),
-		concatMap((x) => of(x).pipe(delay(500)))
-	)
-	.subscribe((products) => {
-		console.log(`Odd numbers`);
-		console.log(products);
-		console.log(`----------------`);
-	});*/
