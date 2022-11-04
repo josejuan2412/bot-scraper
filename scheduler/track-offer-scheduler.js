@@ -37,8 +37,13 @@ class TrackOffersScheduler {
       let products = await this.getData();
       if (this.tier) {
         products = products.filter((p) => p.tier === this.tier);
+        console.log(
+          `For tier "${this.tier}" you have ${products.length} products`
+        );
+      } else {
+        console.log(`Total ${products.length} products`);
       }
-      console.log(` ${products.length} products`);
+
       for (const product of products) {
         const worker = new TrackOffersWorker({
           product,
