@@ -17,7 +17,7 @@ const db = new DynamoDb();
 // This is for test purposes
 let getData = async () => {
   const arr = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 1; i++) {
     arr.push({
       asin: "B09N3RF", //"B07PXGQC1Q",
       description:
@@ -74,7 +74,7 @@ async function run() {
     observable
       .pipe(
         bufferCount(WORKER_GROUP_LENGTH),
-        concatMap((x) => of(x).pipe(delay(DELAY_BETWEEN_GROUPS)))
+        concatMap((x) => of(x).pipe(delay(DELAY_BETWEEN_GROUPS))),
       )
       .subscribe({
         next: (workers) => {
