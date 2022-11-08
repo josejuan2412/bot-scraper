@@ -29,7 +29,7 @@ let getData = async () => {
   return arr;
 };
 
-getData = async () => {
+/*getData = async () => {
   if (!fetchFromCache) {
     const products = await db.getProducts();
     fs.writeFileSync(
@@ -42,7 +42,7 @@ getData = async () => {
   }
 
   return JSON.parse(fs.readFileSync("products.json", "utf-8"));
-};
+};*/
 
 run()
   .then((browser) => {
