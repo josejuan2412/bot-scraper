@@ -1,5 +1,6 @@
 const DELAY_BETWEEN_GROUPS = 10 * 1000; // 10 Seconds
 const FETCH_FREQUENCY = 120 * 1000; // Fetch the products every minute
+const WORKER_GROUP_LENGTH = 10;
 const TIERS_VALUES = {
   1: {
     group: 10,
