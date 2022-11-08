@@ -35,10 +35,11 @@ class TrackOffersScheduler {
   async run(subscriber) {
     try {
       let products = await this.getData();
+      console.log(products);
       if (this.tier) {
         products = products.filter((p) => p.tier === this.tier);
         console.log(
-          `For tier "${this.tier}" you have ${products.length} products`
+          `For tier "${this.tier}" you have ${products.length} products`,
         );
       } else {
         console.log(`Total ${products.length} products`);
@@ -82,7 +83,7 @@ class TrackOffersWorker {
       console.log(`Offers not found for "${asin}"`);
     } else {
       console.log(
-        `For "${description}" (${asin}) i found ${offers.length} offers`
+        `For "${description}" (${asin}) i found ${offers.length} offers`,
       );
     }
 

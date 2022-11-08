@@ -17,7 +17,7 @@ const db = new DynamoDb();
 // This is for test purposes
 let getData = async () => {
   const arr = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 1; i++) {
     arr.push({
       asin: "B09N3RF", //"B07PXGQC1Q",
       description:
@@ -29,20 +29,20 @@ let getData = async () => {
   return arr;
 };
 
-getData = async () => {
-  if (!fetchFromCache) {
-    const products = await db.getProducts();
-    fs.writeFileSync(
-      "products.json",
-      JSON.stringify(products, null, 2),
-      "utf-8"
-    );
-    fetchFromCache = true;
-    return products;
-  }
+// getData = async () => {
+//   if (!fetchFromCache) {
+//     const products = await db.getProducts();
+//     fs.writeFileSync(
+//       "products.json",
+//       JSON.stringify(products, null, 2),
+//       "utf-8"
+//     );
+//     fetchFromCache = true;
+//     return products;
+//   }
 
-  return JSON.parse(fs.readFileSync("products.json", "utf-8"));
-};
+//   return JSON.parse(fs.readFileSync("products.json", "utf-8"));
+// };
 
 run()
   .then((browser) => {
@@ -74,7 +74,7 @@ async function run() {
     observable
       .pipe(
         bufferCount(WORKER_GROUP_LENGTH),
-        concatMap((x) => of(x).pipe(delay(DELAY_BETWEEN_GROUPS)))
+        concatMap((x) => of(x).pipe(delay(DELAY_BETWEEN_GROUPS))),
       )
       .subscribe({
         next: (workers) => {
