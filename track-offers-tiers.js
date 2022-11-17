@@ -27,20 +27,20 @@ let getData = async () => {
   return arr;
 };
 
-getData = async () => {
-  if (!fetchFromCache) {
-    const products = await db.getProducts();
-    fs.writeFileSync(
-      "products.json",
-      JSON.stringify(products, null, 2),
-      "utf-8"
-    );
-    fetchFromCache = true;
-    return products;
-  }
+// getData = async () => {
+//   if (!fetchFromCache) {
+//     const products = await db.getProducts();
+//     fs.writeFileSync(
+//       "products.json",
+//       JSON.stringify(products, null, 2),
+//       "utf-8"
+//     );
+//     fetchFromCache = true;
+//     return products;
+//   }
 
-  return JSON.parse(fs.readFileSync("products.json", "utf-8"));
-};
+//   return JSON.parse(fs.readFileSync("products.json", "utf-8"));
+// };
 
 run()
   .then((browser) => {
@@ -95,7 +95,7 @@ function processObservables(observables, tier, browser, resolve, reject) {
     .pipe(filter((worker) => `${worker.product.tier}` === `${tier}`))
     .pipe(
       bufferCount(values.group),
-      concatMap((x) => of(x).pipe(getRandomDelay(tier)))
+      concatMap((x) => of(x).pipe(getRandomDelay(tier))),
     )
     .subscribe({
       next: (workers) => {
@@ -118,7 +118,7 @@ function processObservables(observables, tier, browser, resolve, reject) {
 function getRandomDelay(tier) {
   const tierDelay = generateRandomFromRange(
     TIERS_VALUES[tier].delay.min,
-    TIERS_VALUES[tier].delay.max
+    TIERS_VALUES[tier].delay.max,
   );
   console.log(`Delay of ${tierDelay}s in tier "${tier}"`);
   return delay(tierDelay * 1000);

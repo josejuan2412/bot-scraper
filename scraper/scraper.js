@@ -10,13 +10,12 @@ class Scraper {
   static getOffers({ html, asin }) {
     // page.reload(); //verify if there's a way to prevent this
     // let html = await page.evaluate(() => document.body.innerHTML);
-    console.log(html);
     const $ = cheerio.load(html);
     let offers = [];
     const errors = [
       {
         message: `Sorry! We couldn't find that page. Try searching or go to Amazon's home page.`,
-        type: "Not Found",
+        type: "Product Not Found",
       },
       {
         message: `Sorry, we just need to make sure you're not a robot. For best results, please make sure your browser is accepting cookies.`,
@@ -27,9 +26,9 @@ class Scraper {
         type: "Amazon server error",
       },
     ];
-    for (const error in errors) {
+    for (const error of errors) {
       if (html.includes(error.message)) {
-        throw new ValidationError(error);
+        throw new ValidationError(error.type);
       }
     }
 
@@ -65,6 +64,98 @@ class Scraper {
         }
       });
     });
+    return offers;
+  }
+
+  static getThirdPartyOffers({ html, asin }) {
+    // page.reload(); //verify if there's a way to prevent this
+    // let html = await page.evaluate(() => document.body.innerHTML);
+    const $ = cheerio.load(html);
+    //console.log($);
+    let offers = [];
+    const errors = [
+      {
+        message: `Sorry! We couldn't find that page. Try searching or go to Amazon's home page.`,
+        type: "Product Not Found",
+      },
+      {
+        message: `Sorry, we just need to make sure you're not a robot. For best results, please make sure your browser is accepting cookies.`,
+        type: "Captcha",
+      },
+      {
+        message: `Something went wrong on our end`,
+        type: "Amazon server error",
+      },
+    ];
+    for (const error of errors) {
+      if (html.includes(error.message)) {
+        throw new ValidationError(error.type);
+      }
+    }
+
+    let pinnedOfferRaw = $("#aod-pinned-offer", html);
+    let pinnedOfferInfo = $(pinnedOfferRaw).find("#aod-price-0");
+
+    const price = $(pinnedOfferInfo)
+      .find("span.a-offscreen")
+      .text()
+      .substring(1)
+      .replace(",", "");
+
+    if (price) {
+      let buttonDiv = $(pinnedOfferRaw).find(
+        "div.a-fixed-right-grid-col.aod-atc-column.a-col-right",
+      );
+      let offerElement = $(buttonDiv).find("span.a-declarative");
+      const offerAttribute = offerElement[0].attribs["data-aod-atc-action"];
+
+      const offerID = JSON.parse(offerAttribute).oid;
+      offers.push({
+        price: price,
+        seller: "Unknown",
+        offerID: offerID,
+        ASIN: asin,
+        checkoutUrl: `https://smile.amazon.com/gp/checkoutportal/enter-checkout.html?buyNow=1&skipCart=1&offeringID=${offerID}&quantity=1`,
+      });
+    }
+
+    if (offers.length === 0) {
+      console.log("DIDN'T FOUND ANYTHING ON PINNED, LETS TRY AOD-LIST");
+      $("#aod-offer-list", html).each((id, item) => {
+        const list = $(item);
+        const offer = list.find("#aod-offer");
+        offer.each((index, row) => {
+          let seller = $(row).find("#aod-offer-soldBy");
+          const provider = $(seller)
+            .find("div.a-fixed-left-grid-col.a-col-right")
+            .text();
+          if (provider.trim() === "Amazon Warehouse") {
+            let buttonDiv = $(row).find(
+              "div.a-fixed-right-grid-col.aod-atc-column.a-col-right",
+            );
+            let offerElement = $(buttonDiv).find("span.a-declarative");
+            const offerAttribute =
+              offerElement[0].attribs["data-aod-atc-action"];
+            const offerPrice = parseFloat(
+              $(row)
+                .find("span.a-offscreen")
+                .text()
+                .substring(1)
+                .replace(",", ""),
+            );
+            const offerID = JSON.parse(offerAttribute).oid;
+            offers.push({
+              price: offerPrice,
+              seller: "Unknown",
+              offerID: offerID,
+              ASIN: asin,
+              checkoutUrl: `https://smile.amazon.com/gp/checkoutportal/enter-checkout.html?buyNow=1&skipCart=1&offeringID=${offerID}&quantity=1`,
+            });
+          }
+        });
+      });
+    }
+
     return offers;
   }
 
